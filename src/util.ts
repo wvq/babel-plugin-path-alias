@@ -6,7 +6,6 @@ export function isNil(value: any) {
   return value === null || value === undefined
 }
 
-
-export function trya() {
-
+export function toPosixPath(sourcePath: string) {
+  return sourcePath.replace(/\\/g, '/')
 }
