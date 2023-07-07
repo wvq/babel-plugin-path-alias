@@ -1,0 +1,14 @@
+{
+  "presets": [["@babel/preset-env"]],
+  "plugins": [
+    [
+      "path-alias",
+      {
+        "baseUrl": ".",
+        "paths": {
+          "@/*": ["src/*"]
+        }
+      }
+    ]
+  ]
+}
