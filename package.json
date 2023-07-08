@@ -5,7 +5,18 @@
   "files": [
     "lib"
   ],
-  "description": "Babel plugin like typescript path alias",
+  "description": "Babel plugin path alias like typescript.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wvq/babel-plugin-path-alias.git"
+  },
+  "keywords": [
+    "babel",
+    "babel-plugin",
+    "import",
+    "rename",
+    "path-alias"
+  ],
   "scripts": {
     "build": "rimraf lib && tsc",
     "test": "jest"

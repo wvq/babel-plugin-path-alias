@@ -1,11 +1,8 @@
 import type { PluginOptions, Babel } from './types'
-import type { PluginObj, PluginPass, NodePath, Node } from '@babel/core'
-import type { ExportDeclaration, ImportDeclaration, StringLiteral } from '@babel/types'
-import * as t from '@babel/types'
+import type { PluginObj, PluginPass, NodePath, BabelFile } from '@babel/core'
+import type { ExportDeclaration, ImportDeclaration, CallExpression } from '@babel/types'
 import { isEmptyObject, isNil } from './util'
-import PathMapper from './path-mapper'
-
-const DEFAULT_EXTENSIONS = ['js', 'ts', 'jsx', 'tsx', 'mjs']
+import PathResolver from './path-resolver'
 
 export default function pathAlias(babel: Babel, config?: PluginOptions): PluginObj {
   if (isNil(config) || isEmptyObject(config)) {
@@ -15,38 +12,33 @@ export default function pathAlias(babel: Babel, config?: PluginOptions): PluginO
     }
   }
 
-  let { baseUrl, extensions, paths } = config!
-
-  let mappers = Object.keys(paths).map(key => {
-    return new PathMapper(baseUrl ?? '.', key, paths[key], extensions || DEFAULT_EXTENSIONS)
-  })
+  const resolver = new PathResolver(config!)
 
   return {
     name: 'path-alias',
-    pre() {},
+    pre(file: BabelFile) {
+      console.log('pre: ' + file.opts.filename)
+    },
 
-    post() {},
+    post(file: BabelFile) {
+      console.log('post: ' + file.opts.filename)
+      // nothing todo
+    },
 
     visitor: {
-      ImportDeclaration(nodePath: NodePath<ImportDeclaration | ExportDeclaration>, state: PluginPass) {
-        let { filename } = state
-        let source = nodePath.get('source') as NodePath<StringLiteral>
-        if (!source.isStringLiteral()) {
-          return
-        }
-
-        let importPath = source.node.value
-
-        for (let mapper of mappers) {
-          if (mapper.test(importPath)) {
-            let result = mapper.resolve(filename as string, importPath)
-            source.replaceWith(t.stringLiteral(result))
-            break
-          }
-        }
+      ImportDeclaration(node: NodePath<ImportDeclaration>, state: PluginPass) {
+        // console.log(node.node.type)
+        // resolver.resolve(node, state)
       },
 
-      ExportDeclaration(nodePath: NodePath<ExportDeclaration>, state: PluginPass) {
+      ExportDeclaration(node: NodePath<ExportDeclaration>, state: PluginPass) {
+        // resolver.resolve(node, state)
+      },
+
+      CallExpression(node: NodePath<CallExpression>, state: PluginPass) {
+        // console.log(node)
+        console.log(node.node.callee)
+        resolver.resolveMethodCall(node, state)
       }
     }
   }
