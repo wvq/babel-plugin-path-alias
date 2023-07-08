@@ -1,3 +1,2 @@
-import '@/views/home'
-
-import TodoEntity, {name} from '@/entity/todo'
+import 'core-js'
+import 'path'
